@@ -14,17 +14,13 @@ const state = {
 }
 //LOAD IMAGE
 const bgimg = new Image();
-const turtle1 = new Image();
-const turtle2 = new Image();
-const turtle3 = new Image();
+const turtle = new Image();
 const garbage = new Image();
 const fgimg = new Image();
 
 bgimg.src = "img/rbackground3.png";
-fgimg.src = "img/background1.png";
-turtle1.src = "img/turtle1.png";
-turtle2.src = "img/turtle2.png";
-turtle3.src = "img/turtle3.png";
+fgimg.src = "img/floor9.jpg";
+turtle.src = "img/turtle.jpg";
 garbage.src = "img/marine-garbage.png";
 
 //BACKGROUND
@@ -38,17 +34,17 @@ const bg={
 
     draw : function(){
         ctx.drawImage(bgimg, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
-        ctx.drawImage(bgimg, this.sX, this.sY, this.w, this.h, this.x + this.w, this.y, this.w, this.h);
+       
     }
     
 }
 
-//FOREGROUND
+//FOREGROUND(부족해)
 const fg = {
     sX : 0,
-    sY : 100,
-    w : 2500,
-    h : 339,
+    sY : 0,
+    w : cvs.width,
+    h : 50,
     x : 0,
     y : cvs.height-50,
 
@@ -56,16 +52,50 @@ const fg = {
 
     draw : function(){
         ctx.drawImage(fgimg, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
+
         ctx.drawImage(fgimg, this.sX, this.sY, this.w, this.h, this.x + this.w, this.y, this.w, this.h);
     },
 
     update : function(){
         if(state.current == state.game){
-            this.x = (this.x - this.dx)%(this.w/2);
+            this.x = (this.x - this.dx)%(this.w);
         }
     }
 }
+// const fg = {
+//     sX : 0,
+//     sY : 0,
+//     w : cvs.width,
+//     h : 50,
+//     x : 0,
+//     y : cvs.height-50,
 
+//     dx :2,
+
+//     draw : function(){
+//         ctx.drawImage(fgimg, this.sX, this.sY, this.w, this.h, this.x, this.y, this.w, this.h);
+
+//         ctx.drawImage(fgimg, this.sX, this.sY, this.w, this.h, this.x + this.w-102, this.y, this.w, this.h);
+//     },
+
+//     update : function(){
+//         if(state.current == state.game){
+//             this.x = (this.x - this.dx)%(this.w);
+//         }
+//     }
+// }
+//TURTLE
+const turtle = {
+    animation : [
+        {}
+    ],
+    sX : 0,
+    sY : 0,
+    w : cvs.width,
+    h : 50,
+    x : 0,
+    y : cvs.height-50,
+}
 //DRAW
 function draw(){
     // ctx.fillStyle = "black";
@@ -75,7 +105,7 @@ function draw(){
 }
 //UPDATE
 function update(){
-    fg.update();
+   fg.update();
 }
 //LOOP
 function loop(){
