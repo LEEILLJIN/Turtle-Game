@@ -1,17 +1,16 @@
-/*2021-6-11 
-    todo : 
-        -장애물 움직이고 충돌 이벤트 clear
-        -점수, gameover
-        gameover 이벤트 처리
 
-*/
 
 //SELECT CVS
 const cvs = document.getElementById("turtle");
 const ctx = cvs.getContext("2d");
 //GAMEOVER MESSAGE
-const RESTART = document.querySelector(".restart");
-const SHOWING = "showing";
+const RESTART = {
+    value : "START",
+    x : cvs.width/2 -30,
+    y : 120,
+    w : 87,
+    h : 35
+}
 //GAME VARS AND CONSTS
 let frames =0;
 const DEGREE = Math.PI/180;
@@ -59,13 +58,16 @@ cvs.addEventListener("click",function(evt){
            // SWIM.play();
             break;
         case state.over:
-            RESTART.addEventListener("click" , function(){
-                console.log("Dd");
+            let rect = cvs.getBoundingClientRect();
+            let clickX = evt.clientX  - rect.left;//??
+            let clickY = evt.clientY - rect.top;//??
+            if(clickX >= RESTART.x && clickX <= RESTART.x + RESTART.w && clickY >= RESTART.y && clickY <= RESTART.y + RESTART.h){
                 turtle.speedReset();
                 garbage.reset();
                 score.reset();
                 state.current = state.getReady;
-            })
+            }
+            
 
     }
 });
@@ -86,7 +88,7 @@ const bg={
     
 }
 
-//FOREGROUND(부족해)
+//FOREGROUND
 const fg = {
     sX : 0,
     sY : 0,
@@ -127,8 +129,8 @@ const turtle = {
     jump : 4.6,
     speed : 0,
     rotation : 0,
-    w_radius : 60,
-    h_radius : 40,
+    w_radius : 65,
+    h_radius : 45,
 
     draw : function(){
         let turtle = this.animation[this.frame];
@@ -145,6 +147,9 @@ const turtle = {
 
     update : function(){
         this.period = state.current == state.getReady ? 10 : 5;
+        if(state.current == state.over){
+            this.period = 0;
+        }
         this.frame += frames%this.period == 0 ? 1 : 0;
         this.frame = this.frame%this.animation.length;
 
@@ -163,11 +168,13 @@ const turtle = {
              }
             }
             //IF THE SPEED IS GREATER THAN THE JUMP MEANS THE BIRDS IS FALLING DOWN
-            if(this.speed < this.jump){
-                this.rotation = -10 * DEGREE;
-            }else{
+            if(this.speed >= this.jump){
                 this.frame = 1;
             }
+            // }else{
+            //     this.rotation = -15 * DEGREE;
+            // }
+            
         }
     },
 
@@ -266,16 +273,22 @@ const garbage = {
             let p = this.position[i];
             //COLLECTION DETECTION
             if(turtle.x + turtle.w_radius > p.x-p.w/2 && turtle.x - turtle.w_radius < p.x+p.w/2 && turtle.y + turtle.h_radius > p.y-p.h/2 && turtle.y - turtle.h_radius < p.y + p.h/2){
-                state.current = state.over;
-                turtle.rotation = 90 * DEGREE;
+                state.current = state.over; 
+                turtle.rotation = 80 *DEGREE;
                 HIT.play();
+                if(turtle.y + turtle.w/2 >= cvs.height-70){
+                    console.log("Ddd");
+                    DIE.play();
+                }
             }
 
             //MOVE THE PIPES TO THE LEFT
             p.x -= this.dx;
 
              //IF THE GARBAGE GO BEYOND CANVAS, WE DELETE THEM FROM THE ARRAY
-
+            if(p.x + this.w <=0){
+                this.position.shift();
+            }
             score.best = Math.max(score.value, score.best);
             localStorage.setItem("best",score.best);
             
@@ -323,11 +336,9 @@ const score = {
 const gameOver = {
     draw : function(){
         if(state.current == state.over){
-            RESTART.classList.add(SHOWING);
-            RESTART.innerText = "START";
             ctx.font = "35px Teko";
-            ctx.fillText(RESTART.innerText, cvs.width/2-30, 150);
-            ctx.strokeText(RESTART.innerText, cvs.width/2-30, 150);
+            ctx.fillText(RESTART.value, cvs.width/2-30, 150);
+            ctx.strokeText(RESTART.value, cvs.width/2-30, 150);
         }
     }
 }
