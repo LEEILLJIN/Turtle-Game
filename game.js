@@ -65,6 +65,7 @@ cvs.addEventListener("click",function(evt){
                 turtle.speedReset();
                 garbage.reset();
                 score.reset();
+                diesound.reset();
                 state.current = state.getReady;
             }
             
@@ -275,11 +276,8 @@ const garbage = {
             if(turtle.x + turtle.w_radius > p.x-p.w/2 && turtle.x - turtle.w_radius < p.x+p.w/2 && turtle.y + turtle.h_radius > p.y-p.h/2 && turtle.y - turtle.h_radius < p.y + p.h/2){
                 state.current = state.over; 
                 turtle.rotation = 80 *DEGREE;
+                this.y = cvs.height - 70 - this.w/2
                 HIT.play();
-                if(turtle.y + turtle.w/2 >= cvs.height-70){
-                    console.log("Ddd");
-                    DIE.play();
-                }
             }
 
             //MOVE THE PIPES TO THE LEFT
@@ -343,6 +341,27 @@ const gameOver = {
     }
 }
 
+//DIE PLAY(장애물에 닿은 후 거북이가 땅이 닿으면 DIE.play())
+const diesound ={
+    check : 0,
+    play : function () {
+        if(state.current == state.over){
+            if(turtle.y + turtle.w/2 >= cvs.height-50 && this.check == 0){
+                console.log("Ddd");
+                DIE.play();
+                this.check = 1;
+            }
+        }
+    },
+    reset : function(){
+        this.check = 0;
+    }
+}
+
+//PLAY
+function play(){
+    diesound.play();
+}
 //DRAW
 function draw(){
     ctx.fillStyle = "#FFF";
@@ -362,6 +381,7 @@ function update(){
 }
 //LOOP
 function loop(){
+    play();
     update();
     draw();
     frames++;
